@@ -1,0 +1,41 @@
+services:
+  zentra-elasticsearch:
+    container_name: zentra-elasticsearch
+    image: elasticsearch:8.15.0
+    ports:
+      - 9200:9200
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - type: volume
+        source: zentra-elasticsearch-data
+        target: /usr/share/elasticsearch/data
+    networks:
+      - zentra-log-management-network
+      - zentra-network
+    restart: on-failure
+
+  zentra-kibana:
+    container_name: zentra-kibana
+    image: kibana:8.15.0
+    ports:
+      - 5601:5601
+    networks:
+      - zentra-log-management-network
+      - zentra-network
+    restart: on-failure
+    depends_on:
+      - zentra-elasticsearch
+
+volumes:
+  zentra-elasticsearch-data:
+    name: zentra-elasticsearch-data
+
+networks:
+  zentra-log-management-network:
+    name: zentra-log-management-network
+    driver: bridge
+  zentra-network:
+    name: zentra-network
+    external: true
