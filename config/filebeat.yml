@@ -1,10 +1,9 @@
 filebeat.inputs:
-
-- type: filestream
-  id: my-filestream-id
-  enabled: true
-  paths:
-    - /path/to/app.log
+  - type: filestream
+    id: my-filestream-id
+    enabled: true
+    paths:
+      - /log/*/app.log
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
@@ -14,12 +13,10 @@ setup.template.settings:
   index.number_of_shards: 1
 
 output.elasticsearch:
-  hosts: ["localhost:9200"]
-  preset: balanced
-  protocol: "https"
-  username: "elastic"
-  password: "${ES_PASS}"
-  ssl.verification_mode: "none"
+  hosts: ['https://zentra-elasticsearch:9200']
+  username: 'elastic'
+  password: 'XgD0i-rUg+6w6bXlApmo'
+  ssl.verification_mode: none
 
 processors:
   - add_host_metadata:

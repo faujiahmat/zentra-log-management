@@ -28,9 +28,51 @@ services:
     depends_on:
       - zentra-elasticsearch
 
+  zentra-filebeat:
+    image: docker.elastic.co/beats/filebeat:8.15.0
+    container_name: zentra-filebeat
+    user: root
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "chmod go-w /usr/share/filebeat/filebeat.yml &&
+      exec /usr/local/bin/docker-entrypoint -e"
+    volumes:
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - zentra-user-service-logs:/log/user
+      - zentra-auth-service-logs:/log/auth
+      - zentra-order-service-logs:/log/order
+      - zentra-product-service-logs:/log/product
+      - zentra-email-service-logs:/log/email
+      - zentra-cart-service-logs:/log/cart
+
+    networks:
+      - zentra-log-management-network
+      - zentra-network
+    depends_on:
+      - zentra-elasticsearch
+    restart: unless-stopped
+
 volumes:
   zentra-elasticsearch-data:
     name: zentra-elasticsearch-data
+  zentra-auth-service-logs:
+    name: zentra-auth-service-logs
+    external: true
+  zentra-order-service-logs:
+    name: zentra-order-service-logs
+    external: true
+  zentra-product-service-logs:
+    name: zentra-product-service-logs
+    external: true
+  zentra-email-service-logs:
+    name: zentra-email-service-logs
+    external: true
+  zentra-user-service-logs:
+    name: zentra-user-service-logs
+    external: true
+  zentra-cart-service-logs:
+    name: zentra-cart-service-logs
+    external: true
 
 networks:
   zentra-log-management-network:
